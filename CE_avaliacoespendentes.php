@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<?php
+	include "cabecalho.php";
+	include "conectaBD.php";
+	$link = fnConectaBancoDados(); 
+	include "Tabelas.php";
+	include "funcoes.php";
+?>
+</head>
+<body>
+	<div style="background-color:#1A5321;">
+		<div class="container bg-transparent">
+<?php 
+			include "CE_menu.php";
+?>				
+		</div>
+	</div>
+		
+	<div style="background-color: #1A5321;">
+		<BR>
+		<div class="container" style="background-color: whitesmoke;">
+			<div class="row">
+				<p align="center"><img src="images/IFSC_horizontal.png" width="40%"></p>
+			</div>
+		</div>
+	</div>
+			
+	<div  style="background-color: #1A5321;">
+		<div class="container" style="background-color: #E4EBE2;">
+			<div class="row">
+				<p><h2 align="center" style="color: #32A041;"><b>Ambiente Avaliador</b></h2></p>
+				<h3 align="center" style="color: #1A5321;">Minhas avaliações pendentes</h3>
+			</div>
+		</div>
+	</div>
+
+<?php
+	$query = "SELECT * FROM TabSolicitaRSC WHERE estado='aguarda_avaliacao'";
+	$result = mysqli_query($link, $query); 
+	$numlinhas = mysqli_num_rows($result);
+	if ($numlinhas > 0) {
+?>		
+	<div  style="background-color: #1A5321;">
+		<BR>
+		<div class="container" style="background-color: #E4EBE2; ">
+			<BR>
+			<table align='justify' width="100%" style="border: 4px solid #1A5321;">
+				<tr align="center" style="border: 2px solid #1A5321;">
+					<th align="center" style="color: #1A5321;">RSC</th>
+					<th align="center" style="color: #1A5321;">Docente requerente</th>
+					<th align="center" style="color: #1A5321;">Data do<BR>pedido</th>
+					<th align="center" style="color: #1A5321;">Última<BR>movimentação</th>
+					<th align="center" style="color: #1A5321;">Presidente</th>
+					<th align="center" style="color: #1A5321;">Membro externo</th>
+					<th align="center" style="color: #1A5321;">Membro interno</th>
+					<th align="center" style="color: #1A5321;">Avalia<BR>pedido</th>
+				</tr>
+<?php
+					while ($row = mysqli_fetch_assoc($result)) {
+						$idPedido = $row['id'];
+						$docente = $row['docente'];
+						$rsc = $row['rsc'];
+						$datapedido = $row['datapedido'];
+						$dataDistribuido = $row['dataMovimentacao'];
+						$presidente = $row['presidentebanca'];
+						$membroexterno = $row['membroexterno'];
+						$membrointerno = $row['membrointerno'];
+						if ((strcmp($nomeAvaliador,$presidente) == 0) || (strcmp($nomeAvaliador,$membroexterno) == 0) || (strcmp($nomeAvaliador,$membrointerno) == 0)) 
+						{
+?>
+							<tr align="center" style="border: 2px solid #1A5321;">
+								<td align="center"><?php echo $rsc;?></td>
+								<td align="center"><?php echo $docente;?></td>
+								<td align="center"><?php echo fnFormatoData($datapedido);?></td>
+								<td align="center"><?php echo fnFormatoData($dataDistribuido);?></td>
+								<td align="center"><?php echo $presidente;?></td>
+								<td align="center"><?php echo $membroexterno;?></td>
+								<td align="center"><?php echo $membrointerno;?></td>
+								<td align="center">
+									<form action="CE_avaliarRSC.php?idCE=<?php echo fnEncodeID($idCE);?>" method="post">
+										<input type="hidden" name="idPedido" value="<?php echo $idPedido;?>"/>
+										<input type="submit" class="btn" value="Avaliar" style="border-radius: 8px; border: 2px solid #1A5321;; color: white; background-color: #1A5321;"/>
+									</form>
+								</td>
+							</tr>
+<?php
+						}
+					}
+?>
+			</table>
+			<BR>
+		</div>
+	</div>
+<?php
+	}
+
+	fnDesconectaBD($link);
+	include "botaovoltar.php";
+	include "rodape.php";
+?>
+		
+</body>
+</html>
